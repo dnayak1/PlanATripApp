@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">ChatApplication</string>
+    <string name="button_sign_in">Sign In</string>
+    <string name="button_sign_up">Sign Up</string>
+    <string name="button_sign_up_sign_up">Sign Up</string>
+    <string name="button_sign_up_cancel">Cancel</string>
+    <string name="text_view_choose_photo">Add Photo</string>
+    <string name="text_view_add_photo">Add Photo</string>
+    <array name="sex">
+        <item>Sex</item>
+        <item>Male</item>
+        <item>Female</item>
+    </array>
+</resources>

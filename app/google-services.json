@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "468654955869",
+    "firebase_url": "https://chatapplication-af422.firebaseio.com",
+    "project_id": "chatapplication-af422",
+    "storage_bucket": "chatapplication-af422.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:468654955869:android:f558192852e6cc4e",
+        "android_client_info": {
+          "package_name": "dhiraj.com.chatapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "468654955869-5p9fh1usivup9rrq6ljfaqrv6diki0f2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dhiraj.com.chatapplication",
+            "certificate_hash": "384c91c50239e7b5881fb986844fef9f9d8c3f75"
+          }
+        },
+        {
+          "client_id": "468654955869-4tq6e0bbsvoi6nqmq5ddesjgld2ucc3v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwSFgeezy_nt95S-pBr4sVeUD52BsVdy4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "468654955869-4tq6e0bbsvoi6nqmq5ddesjgld2ucc3v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
