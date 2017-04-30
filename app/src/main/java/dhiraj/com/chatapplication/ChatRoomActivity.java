@@ -98,7 +98,9 @@ public class ChatRoomActivity extends AppCompatActivity  implements ChatRoomAdap
         imageButtonOpenMaps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent=new Intent(ChatRoomActivity.this,PlacesActivity.class);
+                intent.putExtra("trip",trip);
+                startActivity(intent);
             }
         });
     }
