@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -45,6 +46,7 @@ public class CreateTripActivity extends AppCompatActivity {
     InputStream inputStream;
     ArrayList<User> friendArrayList;
     User loggedUser;
+    ProgressBar progressBarCreateTrip;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +58,8 @@ public class CreateTripActivity extends AppCompatActivity {
         imageViewTripCoverImage= (ImageView) findViewById(R.id.imageViewTripCoverImage);
         buttonCreateTripCancel= (Button) findViewById(R.id.buttonCreateTripCancel);
         buttonCreateTrip= (Button) findViewById(R.id.buttonCreateTrip);
+        progressBarCreateTrip= (ProgressBar) findViewById(R.id.progressBarCreateTrip);
+        progressBarCreateTrip.setVisibility(View.INVISIBLE);
         mAuth=FirebaseAuth.getInstance();
         mDatabase=FirebaseDatabase.getInstance();
         mStorage=FirebaseStorage.getInstance();
@@ -72,6 +76,9 @@ public class CreateTripActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(!editTextTripTitle.getText().toString().trim().isEmpty() && !editTextTripLocation.getText().toString().trim().isEmpty()){
+                    progressBarCreateTrip.setVisibility(View.VISIBLE);
+                    buttonCreateTrip.setEnabled(false);
+                    buttonCreateTripCancel.setEnabled(false);
                     DatabaseReference viewTripDatabaseReference=mDatabase.getReference("users").child(mAuth.getCurrentUser().getUid())
                             .child("friends").child("confirmedRequest");
                     Query query=viewTripDatabaseReference.orderByChild("confirmedRequest");
@@ -88,9 +95,9 @@ public class CreateTripActivity extends AppCompatActivity {
                                 user.setFirstName(friendSnapshot.child("firstName").getValue().toString());
                                 friendArrayList.add(user);
                             }
-                            if(inputStream!=null){
-                                title=editTextTripTitle.getText().toString();
-                                location=editTextTripLocation.getText().toString();
+                            title=editTextTripTitle.getText().toString();
+                            location=editTextTripLocation.getText().toString();
+                            if(inputStream!=null && title!=null && !title.isEmpty() && location!=null && !location.isEmpty()){
                                 id=mAuth.getCurrentUser().getUid().toString();
                                 String path = "trip/" + mAuth.getCurrentUser().getUid()+".png";
                                 StorageReference storageReference = FirebaseStorage.getInstance().getReference(path);
@@ -104,33 +111,39 @@ public class CreateTripActivity extends AppCompatActivity {
                                         trip.setCreatedBy(id);
                                         trip.setTitle(title);
                                         trip.setLocation(location);
+                                        trip.setId(newId);
                                         trip.setImage(taskSnapshot.getDownloadUrl().toString());
                                         newDatabaseReference.setValue(trip);
-                                        DatabaseReference addViewTripReference=newDatabaseReference.child("viewTripUsers");
+                                        DatabaseReference addViewTripReference=newDatabaseReference.child("tripUsers");
                                         if(friendArrayList!=null && friendArrayList.size()>0) {
                                             for (User user : friendArrayList) {
                                                 DatabaseReference addUserReference = addViewTripReference.child(user.getUserId());
                                                 addUserReference.setValue(user);
                                             }
                                         }
-                                        DatabaseReference sameUserReference=newDatabaseReference.child("viewTripUsers").child(loggedUser.getUserId());
+                                        loggedUser.setJoined(true);
+                                        DatabaseReference sameUserReference=addViewTripReference.child(loggedUser.getUserId());
                                         sameUserReference.setValue(loggedUser);
-                                        DatabaseReference joinedUserReference=newDatabaseReference.child("joinedUsers").child(loggedUser.getUserId());
-                                        joinedUserReference.setValue(loggedUser);
-
+                                        progressBarCreateTrip.setVisibility(View.INVISIBLE);
                                         Toast.makeText(CreateTripActivity.this, "Trip created successfully", Toast.LENGTH_SHORT).show();
-                                        buttonCreateTrip.setEnabled(false);
+                                        finish();
                                     }
                                 });
                                 storageReference.putStream(inputStream).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
+                                        buttonCreateTrip.setEnabled(true);
+                                        buttonCreateTripCancel.setEnabled(true);
+                                        progressBarCreateTrip.setVisibility(View.INVISIBLE);
                                         Toast.makeText(CreateTripActivity.this, "Image uploading failed", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }
                             else{
-                                Toast.makeText(CreateTripActivity.this, "Photo not added", Toast.LENGTH_SHORT).show();
+                                buttonCreateTrip.setEnabled(true);
+                                buttonCreateTripCancel.setEnabled(true);
+                                progressBarCreateTrip.setVisibility(View.INVISIBLE);
+                                Toast.makeText(CreateTripActivity.this, "Photo, Location Or Title not added", Toast.LENGTH_SHORT).show();
                             }
                         }
 
@@ -141,6 +154,9 @@ public class CreateTripActivity extends AppCompatActivity {
                     });
                 }
                 else {
+                    buttonCreateTrip.setEnabled(true);
+                    buttonCreateTripCancel.setEnabled(true);
+                    progressBarCreateTrip.setVisibility(View.INVISIBLE);
                     Toast.makeText(CreateTripActivity.this, "Enter All Details", Toast.LENGTH_SHORT).show();
                 }
                 

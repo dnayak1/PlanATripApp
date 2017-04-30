@@ -8,6 +8,15 @@ import java.io.Serializable;
 
 public class User implements Serializable {
     private String firstName, lastName, sex, image, userId;
+    private boolean isJoined;
+
+    public boolean isJoined() {
+        return isJoined;
+    }
+
+    public void setJoined(boolean joined) {
+        isJoined = joined;
+    }
 
     public String getUserId() {
         return userId;

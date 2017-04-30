@@ -1,5 +1,6 @@
 package dhiraj.com.chatapplication;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -35,6 +37,7 @@ public class ViewTripsActivity extends AppCompatActivity implements ViewTripsRec
     Button buttonViewTripsDone;
     ProgressBar progressBarViewTrips;
     TextView textViewNoTripsAvailable;
+    User loggedUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +50,7 @@ public class ViewTripsActivity extends AppCompatActivity implements ViewTripsRec
         textViewNoTripsAvailable= (TextView) findViewById(R.id.textViewNoTripsAvailable);
         textViewNoTripsAvailable.setVisibility(View.INVISIBLE);
         progressBarViewTrips.setVisibility(View.VISIBLE);
+        loggedUser= (User) getIntent().getExtras().getSerializable("loggedUser");
         mAuth=FirebaseAuth.getInstance();
         mDatabase=FirebaseDatabase.getInstance();
         DatabaseReference databaseReference=mDatabase.getReference("trips");
@@ -56,32 +60,34 @@ public class ViewTripsActivity extends AppCompatActivity implements ViewTripsRec
             public void onDataChange(DataSnapshot dataSnapshot) {
                 tripArrayList=new ArrayList<Trip>();
                 for(DataSnapshot tripSnapshot:dataSnapshot.getChildren()){
-                    Trip trip=new Trip();
-                    HashMap<String,User> userHashMap= (HashMap<String, User>) tripSnapshot.child("viewTripUsers").getValue();
-                    Iterator it = userHashMap.entrySet().iterator();
-                    while (it.hasNext()) {
-                        Map.Entry pair = (Map.Entry)it.next();
-                        if(pair.getKey().toString().equals(mAuth.getCurrentUser().getUid())){
-                            trip=new Trip();
-                            trip.setTitle(tripSnapshot.child("title").getValue().toString());
-                            trip.setLocation(tripSnapshot.child("location").getValue().toString());
-                            trip.setImage(tripSnapshot.child("image").getValue().toString());
-                            trip.setCreatedBy(tripSnapshot.child("createdBy").getValue().toString());
-                            trip.setId(tripSnapshot.getKey());
-                            HashMap<String,User> joinedUserHashMap= (HashMap<String, User>) tripSnapshot.child("joinedUsers").getValue();
-                            Iterator iterator=joinedUserHashMap.entrySet().iterator();
-                            while (iterator.hasNext()){
-                                Map.Entry entry= (Map.Entry) iterator.next();
-                                if(entry.getKey().toString().equals(pair.getKey())){
+                    for(DataSnapshot userSnapshot:tripSnapshot.child("tripUsers").getChildren()){
+                        if (userSnapshot.child("userId").getValue()!=null){
+                            if(userSnapshot.child("userId").getValue().toString().equals(mAuth.getCurrentUser().getUid())){
+                                Trip trip;
+                                if(userSnapshot.child("joined").getValue().toString().equals("true")){
+                                    trip=new Trip();
+                                    trip.setCreatedBy(tripSnapshot.child("createdBy").getValue().toString());
+                                    trip.setImage(tripSnapshot.child("image").getValue().toString());
+                                    trip.setLocation(tripSnapshot.child("location").getValue().toString());
+                                    trip.setTitle(tripSnapshot.child("title").getValue().toString());
+                                    trip.setId(tripSnapshot.child("id").getValue().toString());
                                     trip.setJoined(true);
+                                }
+                                else{
+                                    trip=new Trip();
+                                    trip.setCreatedBy(tripSnapshot.child("createdBy").getValue().toString());
+                                    trip.setImage(tripSnapshot.child("image").getValue().toString());
+                                    trip.setLocation(tripSnapshot.child("location").getValue().toString());
+                                    trip.setTitle(tripSnapshot.child("title").getValue().toString());
+                                    trip.setId(tripSnapshot.child("id").getValue().toString());
+                                    trip.setJoined(false);
+                                }
+                                if(trip!=null && trip.getId()!=null){
+                                    tripArrayList.add(trip);
                                 }
                             }
                         }
-                    }
-
-                    if(trip!=null && trip.getId()!=null){
-                        tripArrayList.add(trip);
-                    }
+                        }
                 }
                 if ((tripArrayList!=null && tripArrayList.size()>0)){
                     progressBarViewTrips.setVisibility(View.INVISIBLE);
@@ -113,11 +119,27 @@ public class ViewTripsActivity extends AppCompatActivity implements ViewTripsRec
 
     @Override
     public void joinTrip(Trip trip) {
-
+        DatabaseReference databaseReference=mDatabase.getReference("trips").child(trip.getId()).child("tripUsers").child(loggedUser.getUserId());
+        loggedUser.setJoined(true);
+        databaseReference.setValue(loggedUser);
+        for(Trip trips:tripArrayList){
+            if(trips.getId().equals(trip.getId())){
+                trips.setJoined(true);
+            }
+        }
+        Toast.makeText(this, "Trip joined!!!", Toast.LENGTH_SHORT).show();
+        viewTripsRecyclerAdapter=new ViewTripsRecyclerAdapter(ViewTripsActivity.this,tripArrayList,ViewTripsActivity.this);
+        recyclerViewViewTrips.setAdapter(viewTripsRecyclerAdapter);
+        layoutManager=new LinearLayoutManager(ViewTripsActivity.this);
+        recyclerViewViewTrips.setLayoutManager(layoutManager);
+        viewTripsRecyclerAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void chatRoom(Trip trip) {
-
+        Intent intent=new Intent(ViewTripsActivity.this,ChatRoomActivity.class);
+        intent.putExtra("selectedTrip",trip);
+        intent.putExtra("loggedUser",loggedUser);
+        startActivity(intent);
     }
 }

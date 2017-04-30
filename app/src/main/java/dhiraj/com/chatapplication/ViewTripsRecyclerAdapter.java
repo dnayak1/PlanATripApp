@@ -42,7 +42,7 @@ public class ViewTripsRecyclerAdapter extends RecyclerView.Adapter<ViewTripsRecy
         final Trip trip=arrayListTrip.get(position);
         Picasso.with(mContext).load(trip.getImage()).into(holder.imageViewTripImage);
         holder.textViewTripNameLocation.setText(trip.getTitle()+" To "+trip.getLocation());
-        if(trip.isJoined){
+        if(trip.isJoined()){
             holder.buttonJoinTrip.setVisibility(View.INVISIBLE);
         }
         else {

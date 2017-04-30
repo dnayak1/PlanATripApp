@@ -83,43 +83,46 @@ public class WelcomeActivity extends AppCompatActivity implements GridRecyclerAd
                 progressBarSearch.setVisibility(View.VISIBLE);
                 userArrayList=new ArrayList<User>();
                 search=editTextSearchFriend.getText().toString().trim();
-                DatabaseReference databaseReference=mDatabase.getReference("users");
-                Query query=databaseReference.orderByChild("firstName").equalTo(search);
-                query.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        progressBarSearch.setVisibility(View.INVISIBLE);
-                        if(dataSnapshot.getValue()==null)
-                            textViewNoUserFound.setVisibility(View.VISIBLE);
-                        else{
-                            textViewNoUserFound.setVisibility(View.INVISIBLE);
-                            userArrayList=new ArrayList<User>();
-                            for(DataSnapshot userSnapshot:dataSnapshot.getChildren()){
+                if(search!=null && !search.isEmpty()){
+                    DatabaseReference databaseReference=mDatabase.getReference("users");
+                    Query query=databaseReference.orderByChild("firstName").equalTo(search.toUpperCase());
+                    query.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            progressBarSearch.setVisibility(View.INVISIBLE);
+                            if(dataSnapshot.getValue()==null)
+                                textViewNoUserFound.setVisibility(View.VISIBLE);
+                            else{
+                                textViewNoUserFound.setVisibility(View.INVISIBLE);
+                                userArrayList=new ArrayList<User>();
+                                for(DataSnapshot userSnapshot:dataSnapshot.getChildren()){
                                     if(!FirebaseAuth.getInstance().getCurrentUser().getUid().equals(userSnapshot.getKey())){
-                                    User user=new User();
-                                    user.setImage((String) userSnapshot.child("image").getValue());
-                                    user.setSex((String) userSnapshot.child("sex").getValue());
-                                    user.setFirstName((String) userSnapshot.child("firstName").getValue());
-                                    user.setLastName((String) userSnapshot.child("lastName").getValue());
-                                    user.setUserId(userSnapshot.getKey());
-                                    userArrayList.add(user);
-                                }
+                                        User user=new User();
+                                        user.setImage((String) userSnapshot.child("image").getValue());
+                                        user.setSex((String) userSnapshot.child("sex").getValue());
+                                        user.setFirstName((String) userSnapshot.child("firstName").getValue());
+                                        user.setLastName((String) userSnapshot.child("lastName").getValue());
+                                        user.setUserId(userSnapshot.getKey());
+                                        userArrayList.add(user);
+                                    }
 
+                                }
+                                searchAdapter=new GridRecyclerAdapter(WelcomeActivity.this,userArrayList,WelcomeActivity.this);
+                                recyclerViewSearchResult.setAdapter(searchAdapter);
+                                layoutManager=new LinearLayoutManager(WelcomeActivity.this);
+                                recyclerViewSearchResult.setLayoutManager(layoutManager);
+                                searchAdapter.notifyDataSetChanged();
                             }
-                            searchAdapter=new GridRecyclerAdapter(WelcomeActivity.this,userArrayList,WelcomeActivity.this);
-                            recyclerViewSearchResult.setAdapter(searchAdapter);
-                            layoutManager=new LinearLayoutManager(WelcomeActivity.this);
-                            recyclerViewSearchResult.setLayoutManager(layoutManager);
-                            searchAdapter.notifyDataSetChanged();
+
                         }
 
-                    }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+                }
 
-                    }
-                });
             }
         });
 
@@ -156,12 +159,14 @@ public class WelcomeActivity extends AppCompatActivity implements GridRecyclerAd
                 startActivity(intent);
                 return true;
             case R.id.viewTripsMenu:
-                startActivity(new Intent(WelcomeActivity.this,ViewTripsActivity.class));
+                Intent viewTripIntent=new Intent(WelcomeActivity.this,ViewTripsActivity.class);
+                viewTripIntent.putExtra("loggedUser",loggedUser);
+                startActivity(viewTripIntent);
                 return true;
             case R.id.logoutMenu:
                 FirebaseAuth.getInstance().signOut();
                 Toast.makeText(this, "Successfully Logged Out", Toast.LENGTH_SHORT).show();
-                finish();
+                startActivity(new Intent(WelcomeActivity.this,MainActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Trip implements Serializable {
     private String createdBy,title,location,image,id;
-    boolean isJoined;
+    private boolean isJoined;
 
     public boolean isJoined() {
         return isJoined;

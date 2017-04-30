@@ -23,7 +23,8 @@
         <activity android:name=".PendingRequestActivity" />
         <activity android:name=".FriendsActivity" />
         <activity android:name=".CreateTripActivity" />
-        <activity android:name=".ViewTripsActivity"></activity>
+        <activity android:name=".ViewTripsActivity" />
+        <activity android:name=".ChatRoomActivity"></activity>
     </application>
 
 </manifest>

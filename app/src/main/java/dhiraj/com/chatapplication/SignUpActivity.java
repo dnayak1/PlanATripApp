@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -46,6 +47,7 @@ public class SignUpActivity extends AppCompatActivity {
     FirebaseDatabase mDatabase;
     String firstName, lastName, email, password, sex, profileImage;
     InputStream inputStream = null;
+    ProgressBar progressBarSignUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,7 @@ public class SignUpActivity extends AppCompatActivity {
         imageViewSignUpProfilePic = (ImageView) findViewById(R.id.imageViewSignUpProfilePhoto);
         buttonSignUpSignUp = (Button) findViewById(R.id.buttonSignUpSignUp);
         buttonSignUpCancel = (Button) findViewById(R.id.buttonSignUpCancel);
+        progressBarSignUp= (ProgressBar) findViewById(R.id.progressBarSignUp);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.sex, android.R.layout.simple_spinner_dropdown_item);
         spinnerSignUpSex.setAdapter(adapter);
         mAuth = FirebaseAuth.getInstance();
@@ -66,6 +69,9 @@ public class SignUpActivity extends AppCompatActivity {
         buttonSignUpSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBarSignUp.setVisibility(View.VISIBLE);
+                buttonSignUpCancel.setEnabled(false);
+                buttonSignUpSignUp.setEnabled(false);
                 firstName = editTextSignUpFirstName.getText().toString().trim();
                 lastName = editTextSignUpLastName.getText().toString().trim();
                 email = editTextSignUpEmail.getText().toString().trim();
@@ -81,7 +87,6 @@ public class SignUpActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    Toast.makeText(SignUpActivity.this, "Welcome", Toast.LENGTH_SHORT).show();
                                     String path = "images/" + mAuth.getCurrentUser().getUid()+".png";
                                     StorageReference storageReference = FirebaseStorage.getInstance().getReference(path);
                                     storageReference.putStream(inputStream).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -89,29 +94,48 @@ public class SignUpActivity extends AppCompatActivity {
                                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                             final DatabaseReference databaseReference = mDatabase.getReference().child("users").child(mAuth.getCurrentUser().getUid());
                                             final User user = new User();
-                                            user.setFirstName(firstName);
-                                            user.setLastName(lastName);
+                                            user.setFirstName(firstName.toUpperCase());
+                                            user.setLastName(lastName.toUpperCase());
                                             user.setSex(sex);
                                             profileImage = taskSnapshot.getDownloadUrl().toString();
                                             user.setImage(profileImage);
                                             databaseReference.setValue(user);
+                                            progressBarSignUp.setVisibility(View.INVISIBLE);
+                                            buttonSignUpSignUp.setEnabled(true);
+                                            buttonSignUpCancel.setEnabled(true);
+                                            Toast.makeText(SignUpActivity.this, "Welcome", Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(SignUpActivity.this,WelcomeActivity.class));
                                         }
                                     });
                                     storageReference.putStream(inputStream).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
+                                            progressBarSignUp.setVisibility(View.INVISIBLE);
+                                            buttonSignUpSignUp.setEnabled(true);
+                                            buttonSignUpCancel.setEnabled(true);
                                             Toast.makeText(SignUpActivity.this, "Image uploading failed", Toast.LENGTH_SHORT).show();
                                         }
                                     });
-                                } else
+                                } else{
+                                    progressBarSignUp.setVisibility(View.INVISIBLE);
+                                    buttonSignUpSignUp.setEnabled(true);
+                                    buttonSignUpCancel.setEnabled(true);
                                     Toast.makeText(SignUpActivity.this, "Try again", Toast.LENGTH_SHORT).show();
+                                }
+
                             }
                         });
 
                     } else {
+                        progressBarSignUp.setVisibility(View.INVISIBLE);
+                        buttonSignUpSignUp.setEnabled(true);
+                        buttonSignUpCancel.setEnabled(true);
                         Toast.makeText(SignUpActivity.this, "Invalid data", Toast.LENGTH_SHORT).show();
                     }
                 } else {
+                    progressBarSignUp.setVisibility(View.INVISIBLE);
+                    buttonSignUpSignUp.setEnabled(true);
+                    buttonSignUpCancel.setEnabled(true);
                     Toast.makeText(SignUpActivity.this, "Profile image is not set", Toast.LENGTH_SHORT).show();
                 }
             }
