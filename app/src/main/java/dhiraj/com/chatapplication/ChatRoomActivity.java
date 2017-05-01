@@ -1,5 +1,6 @@
 package dhiraj.com.chatapplication;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -7,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -202,9 +204,23 @@ public class ChatRoomActivity extends AppCompatActivity  implements ChatRoomAdap
     }
 
     @Override
-    public void deleteChat(int position) {
-        DatabaseReference reference=mDatabase.getReference("trips").child(trip.getId()).child("tripUsers").child(loggedUser.getUserId()).child("messages");
-        reference.child(messageArrayList.get(position).getMessageId()).setValue(null);
-        messageArrayList.remove(position);
+    public void deleteChat(final int position) {
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to delete this chat?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                DatabaseReference reference=mDatabase.getReference("trips").child(trip.getId()).child("tripUsers").child(loggedUser.getUserId()).child("messages");
+                reference.child(messageArrayList.get(position).getMessageId()).setValue(null);
+                messageArrayList.remove(position);
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.create().show();
     }
 }

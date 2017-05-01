@@ -2,25 +2,19 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group>
         <item android:title="Pending Requests"
             android:id="@+id/pendingRequestMenu" />
-    </group>
-    <group>
+
         <item android:title="Friends"
             android:id="@+id/friendsMenu" />
-    </group>
-    <group>
+
         <item android:title="Create Trip"
             android:id="@+id/createTripsMenu" />
-    </group>
-    <group>
+
         <item android:title="View Trips"
             android:id="@+id/viewTripsMenu" />
-    </group>
-    <group>
+
         <item android:title="Logout"
             android:id="@+id/logoutMenu" />
-    </group>
 
 </menu>

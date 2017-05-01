@@ -14,13 +14,19 @@
         android:layout_height="50dp"
         android:id="@+id/imageViewViewTrip" />
 
-    <TextView
-        android:text=""
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="60dp"
-        android:layout_marginTop="10dp"
-        android:id="@+id/textViewViewTripTitleLocation" />
+    <LinearLayout
+        android:layout_width="220dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="60dp">
+        <TextView
+            android:text=""
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/textViewViewTripTitleLocation" />
+    </LinearLayout>
+
+
 
     <Button
         android:text="Chat"
