@@ -11,6 +11,22 @@
     android:background="#C0C0C0"
     tools:context="dhiraj.com.chatapplication.MainActivity">
 
+    <com.google.android.gms.common.SignInButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/signIn">
+    </com.google.android.gms.common.SignInButton>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewOrSignInWithEmail"
+        android:text="Or, Sign In With Email"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:layout_below="@+id/signIn"/>
+
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,7 +34,7 @@
         android:ems="10"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="55dp"
+        android:layout_marginTop="155dp"
         android:id="@+id/editTextLoginInEmail"
         android:hint="Email" />
 
@@ -39,6 +55,8 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:layout_below="@id/editTextSignInPassword"
+        android:layout_marginTop="25dp"
         android:id="@+id/buttonSignIn" />
 
     <Button
@@ -55,9 +73,7 @@
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/editTextSignInPassword"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="110dp"
+        android:layout_centerInParent="true"
         android:id="@+id/progressBarLogin"
         android:visibility="invisible"/>
 </RelativeLayout>

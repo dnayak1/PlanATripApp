@@ -168,6 +168,11 @@ public class WelcomeActivity extends AppCompatActivity implements GridRecyclerAd
                 Toast.makeText(this, "Successfully Logged Out", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(WelcomeActivity.this,MainActivity.class));
                 return true;
+            case R.id.updateProfileMenu:
+                Intent updateProfileIntent=new Intent(WelcomeActivity.this,UpdateProfileActivity.class);
+                updateProfileIntent.putExtra("loggedUser",loggedUser);
+                startActivity(updateProfileIntent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
